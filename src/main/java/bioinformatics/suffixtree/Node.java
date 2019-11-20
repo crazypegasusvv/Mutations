@@ -1,10 +1,7 @@
 package bioinformatics.suffixtree;
 
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -24,7 +21,7 @@ class Node {
      * it to int[] take less memory because indexes are stored using native
      * types.
      */
-    private int[] data;
+    private final Map<Integer,Integer> data;
     /**
      * Represents index of the last position used in the data int[] array.
      *
@@ -65,7 +62,7 @@ class Node {
     Node() {
         edges = new EdgeBag();
         suffix = null;
-        data = new int[START_SIZE];
+        data = new HashMap<Integer, Integer>();
     }
 
     /**
@@ -87,8 +84,8 @@ class Node {
      */
     Collection<Integer> getData(int numElements) {
         Set<Integer> ret = new HashSet<Integer>();
-        for (int num : data) {
-            ret.add(num);
+        for (int num : data.keySet()) {
+            ret.add(num*1000 + data.get(num));
             if (ret.size() == numElements) {
                 return ret;
             }
@@ -111,12 +108,19 @@ class Node {
     /**
      * Adds the given <tt>index</tt> to the set of indexes associated with <tt>this</tt>
      */
-    void addRef(int index) {
+    void addRef(int index, int pos) {
         if (contains(index)) {
             return;
         }
-
-        addIndex(index);
+        int sum = index + pos;
+        for(int key : data.keySet()) {
+            if(key + data.get(key) == sum) {
+                System.out.println("found already!");
+                return;
+            }
+        }
+       //System.out.println("adding index: "+index+" pos: "+pos);
+        addIndex(index, pos);
 
         // add this reference to all the suffixes as well
         Node iter = this.suffix;
@@ -124,7 +128,7 @@ class Node {
             if (iter.contains(index)) {
                 break;
             }
-            iter.addRef(index);
+            iter.addRef(index, pos);
             iter = iter.suffix;
         }
 
@@ -139,21 +143,7 @@ class Node {
      * @return true <tt>this</tt> contains a reference to index
      */
     private boolean contains(int index) {
-        int low = 0;
-        int high = lastIdx - 1;
-
-        while (low <= high) {
-            int mid = (low + high) >>> 1;
-            int midVal = data[mid];
-
-            if (midVal < index)
-                low = mid + 1;
-            else if (midVal > index)
-                high = mid - 1;
-            else
-                return true;
-        }
-        return false;
+        return data.containsKey(index);
         // Java 5 equivalent to
         // return java.util.Arrays.binarySearch(data, 0, lastIdx, index) >= 0;
     }
@@ -172,7 +162,7 @@ class Node {
 
     private Set<Integer> computeAndCacheCountRecursive() {
         Set<Integer> ret = new HashSet<Integer>();
-        for (int num : data) {
+        for (int num : data.keySet()) {
             ret.add(num);
         }
         for (Edge e : edges.values()) {
@@ -224,13 +214,8 @@ class Node {
         this.suffix = suffix;
     }
 
-    private void addIndex(int index) {
-        if (lastIdx == data.length) {
-            int[] copy = new int[data.length + INCREMENT];
-            System.arraycopy(data, 0, copy, 0, data.length);
-            data = copy;
-        }
-        data[lastIdx++] = index;
+    private void addIndex(int index, int pos) {
+        data.put(index, pos);
     }
 }
 

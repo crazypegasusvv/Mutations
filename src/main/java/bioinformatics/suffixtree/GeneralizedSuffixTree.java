@@ -136,7 +136,8 @@ public class GeneralizedSuffixTree {
             text = text.intern();
 
             // line 7: update the tree with the new transitions due to this new char
-            Pair<Node, String> active = update(s, text, remainder.substring(i), index);
+            // System.out.println("index: "+index+" i: "+i);
+            Pair<Node, String> active = update(s, text, remainder.substring(i), index, i);
             // line 8: make sure the active pair is canonical
             active = canonize(active.getFirst(), active.getSecond());
 
@@ -178,7 +179,8 @@ public class GeneralizedSuffixTree {
      *                  the last node that can be reached by following the path denoted by stringPart starting from inputs
      *
      */
-    private Pair<Boolean, Node> testAndSplit(final Node inputs, final String stringPart, final char t, final String remainder, final int value) {
+    private Pair<Boolean, Node> testAndSplit(final Node inputs, final String stringPart, final char t,
+                                             final String remainder, final int value, final int pos) {
         // descend the tree as far as possible
         Pair<Node, String> ret = canonize(inputs, stringPart);
         Node s = ret.getFirst();
@@ -215,14 +217,16 @@ public class GeneralizedSuffixTree {
             } else {
                 if (remainder.equals(e.getLabel())) {
                     // update payload of destination node
-                    e.getDest().addRef(value);
+                    //System.out.println("adding ref from method: testAndSplit if");
+                    e.getDest().addRef(value, pos);
                     return new Pair<Boolean, Node>(true, s);
                 } else if (remainder.startsWith(e.getLabel())) {
                     return new Pair<Boolean, Node>(true, s);
                 } else if (e.getLabel().startsWith(remainder)) {
                     // need to split as above
                     Node newNode = new Node();
-                    newNode.addRef(value);
+                    //System.out.println("adding ref from method: testAndSplit else-if");
+                    newNode.addRef(value, pos);
                     Edge newEdge = new Edge(remainder, newNode);
 
                     e.setLabel(e.getLabel().substring(remainder.length()));
@@ -281,7 +285,7 @@ public class GeneralizedSuffixTree {
      * @param rest the rest of the string
      * @param value the value to add to the index
      */
-    private Pair<Node, String> update(final Node inputNode, final String stringPart, final String rest, final int value) {
+    private Pair<Node, String> update(final Node inputNode, final String stringPart, final String rest, final int value, final int pos) {
         Node s = inputNode;
         String tempstr = stringPart;
         char newChar = stringPart.charAt(stringPart.length() - 1);
@@ -289,7 +293,7 @@ public class GeneralizedSuffixTree {
         Node oldroot = root;
 
         // line 1b
-        Pair<Boolean, Node> ret = testAndSplit(s, tempstr.substring(0, tempstr.length() - 1), newChar, rest, value);
+        Pair<Boolean, Node> ret = testAndSplit(s, tempstr.substring(0, tempstr.length() - 1), newChar, rest, value, pos);
 
         Node r = ret.getSecond();
         boolean endpoint = ret.getFirst();
@@ -306,7 +310,8 @@ public class GeneralizedSuffixTree {
             } else {
                 // must build a new leaf
                 leaf = new Node();
-                leaf.addRef(value);
+                //System.out.println("ref added from method: update");
+                leaf.addRef(value, pos);
                 Edge newedge = new Edge(rest, leaf);
                 r.addEdge(newChar, newedge);
             }
@@ -338,7 +343,7 @@ public class GeneralizedSuffixTree {
             }
 
             // line 7
-            ret = testAndSplit(s, safeCutLastChar(tempstr), newChar, rest, value);
+            ret = testAndSplit(s, safeCutLastChar(tempstr), newChar, rest, value, pos);
             r = ret.getSecond();
             endpoint = ret.getFirst();
 
