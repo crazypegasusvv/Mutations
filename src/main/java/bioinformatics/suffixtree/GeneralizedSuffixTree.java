@@ -1,7 +1,10 @@
 package bioinformatics.suffixtree;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.util.Collections.sort;
 
 public class GeneralizedSuffixTree {
 
@@ -19,48 +22,28 @@ public class GeneralizedSuffixTree {
     private Node activeLeaf = root;
 
     /**
-     * Searches for the given word within the GST.
-     *
-     * Returns all the indexes for which the key contains the <tt>word</tt> that was
-     * supplied as input.
-     *
-     * @param word the key to search for
-     * @return the collection of indexes associated with the input <tt>word</tt>
-     */
-    public Collection<Integer> search(String word) {
-        return search(word, -1);
-    }
-
-    /**
      * Searches for the given word within the GST and returns at most the given number of matches.
-     *
      * @param word the key to search for
-     * @param results the max number of results to return
-     * @return at most <tt>results</tt> values for the given word
      */
-    public Collection<Integer> search(String word, int results) {
+    public Set<Integer> search(String word) {
         Node tmpNode = searchNode(word);
         if (tmpNode == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
-        return tmpNode.getData(results);
+        return tmpNode.getData();
     }
 
-    /**
-     * Searches for the given word within the GST and returns at most the given number of matches.
-     *
-     * @param word the key to search for
-     * @param to the max number of results to return
-     * @return at most <tt>results</tt> values for the given word
-     * @see GeneralizedSuffixTree #ResultInfo
-     */
-    public ResultInfo searchWithCount(String word, int to) {
-        Node tmpNode = searchNode(word);
-        if (tmpNode == null) {
-            return new ResultInfo(Collections.EMPTY_LIST, 0);
+    public void searchSubStringFromGST(final String dnaSequence) {
+        Set<Integer> indices = new HashSet<Integer>(search(dnaSequence));
+        if(indices.isEmpty()) {
+            System.out.println("string not found in generalized suffix tree!");
+        } else {
+            System.out.print("string found at indices: ");
+            for(int index : indices) {
+                System.out.print(index +" ");
+            }
+            System.out.println("");
         }
-
-        return new ResultInfo(tmpNode.getData(to), tmpNode.getResultCount());
     }
 
     /**
@@ -136,7 +119,8 @@ public class GeneralizedSuffixTree {
             text = text.intern();
 
             // line 7: update the tree with the new transitions due to this new char
-            Pair<Node, String> active = update(s, text, remainder.substring(i), index);
+            // System.out.println("index: "+index+" i: "+i);
+            Pair<Node, String> active = update(s, text, remainder.substring(i), index, i);
             // line 8: make sure the active pair is canonical
             active = canonize(active.getFirst(), active.getSecond());
 
@@ -148,16 +132,8 @@ public class GeneralizedSuffixTree {
         if (null == activeLeaf.getSuffix() && activeLeaf != root && activeLeaf != s) {
             activeLeaf.setSuffix(s);
         }
-        printTree(root);
     }
 
-    public void printTree(Node treeNode) {
-        /*System.out.println("");
-        Collection<Integer> nodeints = treeNode.getData(-1);
-        for(int i=0;i<nodeints.size();i++) {
-
-        }*/
-    }
     /**
      * Tests whether the string stringPart + t is contained in the subtree that has inputs as root.
      * If that's not the case, and there exists a path of edges e1, e2, ... such that
@@ -178,7 +154,8 @@ public class GeneralizedSuffixTree {
      *                  the last node that can be reached by following the path denoted by stringPart starting from inputs
      *
      */
-    private Pair<Boolean, Node> testAndSplit(final Node inputs, final String stringPart, final char t, final String remainder, final int value) {
+    private Pair<Boolean, Node> testAndSplit(final Node inputs, final String stringPart, final char t,
+                                             final String remainder, final int value, final int pos) {
         // descend the tree as far as possible
         Pair<Node, String> ret = canonize(inputs, stringPart);
         Node s = ret.getFirst();
@@ -215,14 +192,16 @@ public class GeneralizedSuffixTree {
             } else {
                 if (remainder.equals(e.getLabel())) {
                     // update payload of destination node
-                    e.getDest().addRef(value);
+                    //System.out.println("adding ref from method: testAndSplit if");
+                    e.getDest().addRef(value, pos);
                     return new Pair<Boolean, Node>(true, s);
                 } else if (remainder.startsWith(e.getLabel())) {
                     return new Pair<Boolean, Node>(true, s);
                 } else if (e.getLabel().startsWith(remainder)) {
                     // need to split as above
                     Node newNode = new Node();
-                    newNode.addRef(value);
+                    //System.out.println("adding ref from method: testAndSplit else-if");
+                    newNode.addRef(value, pos);
                     Edge newEdge = new Edge(remainder, newNode);
 
                     e.setLabel(e.getLabel().substring(remainder.length()));
@@ -281,7 +260,7 @@ public class GeneralizedSuffixTree {
      * @param rest the rest of the string
      * @param value the value to add to the index
      */
-    private Pair<Node, String> update(final Node inputNode, final String stringPart, final String rest, final int value) {
+    private Pair<Node, String> update(final Node inputNode, final String stringPart, final String rest, final int value, final int pos) {
         Node s = inputNode;
         String tempstr = stringPart;
         char newChar = stringPart.charAt(stringPart.length() - 1);
@@ -289,7 +268,7 @@ public class GeneralizedSuffixTree {
         Node oldroot = root;
 
         // line 1b
-        Pair<Boolean, Node> ret = testAndSplit(s, tempstr.substring(0, tempstr.length() - 1), newChar, rest, value);
+        Pair<Boolean, Node> ret = testAndSplit(s, tempstr.substring(0, tempstr.length() - 1), newChar, rest, value, pos);
 
         Node r = ret.getSecond();
         boolean endpoint = ret.getFirst();
@@ -306,7 +285,8 @@ public class GeneralizedSuffixTree {
             } else {
                 // must build a new leaf
                 leaf = new Node();
-                leaf.addRef(value);
+                //System.out.println("ref added from method: update");
+                leaf.addRef(value, pos);
                 Edge newedge = new Edge(rest, leaf);
                 r.addEdge(newChar, newedge);
             }
@@ -338,7 +318,7 @@ public class GeneralizedSuffixTree {
             }
 
             // line 7
-            ret = testAndSplit(s, safeCutLastChar(tempstr), newChar, rest, value);
+            ret = testAndSplit(s, safeCutLastChar(tempstr), newChar, rest, value, pos);
             r = ret.getSecond();
             endpoint = ret.getFirst();
 
@@ -362,32 +342,6 @@ public class GeneralizedSuffixTree {
             return "";
         }
         return seq.substring(0, seq.length() - 1);
-    }
-
-    public int computeCount() {
-        return root.computeAndCacheCount();
-    }
-
-    /**
-     * An utility object, used to store the data returned by the GeneralizedSuffixTree GeneralizedSuffixTree.searchWithCount method.
-     * It contains a collection of results and the total number of results present in the GST.
-     * @see GeneralizedSuffixTree#searchWithCount(java.lang.String, int)
-     */
-    public static class ResultInfo {
-
-        /**
-         * The total number of results present in the database
-         */
-        public int totalResults;
-        /**
-         * The collection of (some) results present in the GST
-         */
-        public Collection<Integer> results;
-
-        public ResultInfo(Collection<Integer> results, int totalResults) {
-            this.totalResults = totalResults;
-            this.results = results;
-        }
     }
 
     /**

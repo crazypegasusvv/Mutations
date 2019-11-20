@@ -1,10 +1,7 @@
 package bioinformatics.suffixtree;
 
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a node of the generalized suffix tree graph
@@ -24,7 +21,7 @@ class Node {
      * it to int[] take less memory because indexes are stored using native
      * types.
      */
-    private int[] data;
+    private final Map<Integer,Integer> data;
     /**
      * Represents index of the last position used in the data int[] array.
      *
@@ -65,44 +62,22 @@ class Node {
     Node() {
         edges = new EdgeBag();
         suffix = null;
-        data = new int[START_SIZE];
+        data = new HashMap<Integer, Integer>();
     }
 
     /**
      * Returns all the indexes associated to this node and its children.
      * @return all the indexes associated to this node and its children
      */
-    Collection<Integer> getData() {
-        return getData(-1);
-    }
-
-    /**
-     * Returns the first <tt>numElements</tt> elements from the ones associated to this node.
-     *
-     * Gets data from the payload of both this node and its children, the string representation
-     * of the path to this node is a substring of the one of the children nodes.
-     *
-     * @param numElements the number of results to return. Use -1 to get all
-     * @return the first <tt>numElements</tt> associated to this node and children
-     */
-    Collection<Integer> getData(int numElements) {
+    Set<Integer> getData() {
         Set<Integer> ret = new HashSet<Integer>();
-        for (int num : data) {
+        for (int num : data.keySet()) {
             ret.add(num);
-            if (ret.size() == numElements) {
-                return ret;
-            }
         }
-        //System.out.println("--__--");
-        // need to get more matches from child nodes. This is what may waste time
+
         for (Edge e : edges.values()) {
-            if (-1 == numElements || ret.size() < numElements) {
-                for (int num : e.getDest().getData()) {
-                    ret.add(num);
-                    if (ret.size() == numElements) {
-                        return ret;
-                    }
-                }
+            for (int num : e.getDest().getData()) {
+                ret.add(num);
             }
         }
         return ret;
@@ -111,12 +86,19 @@ class Node {
     /**
      * Adds the given <tt>index</tt> to the set of indexes associated with <tt>this</tt>
      */
-    void addRef(int index) {
+    void addRef(int index, int pos) {
         if (contains(index)) {
             return;
         }
-
-        addIndex(index);
+        int sum = index + pos;
+        for(int key : data.keySet()) {
+            if(key + data.get(key) == sum) {
+                System.out.println("found already!");
+                return;
+            }
+        }
+       //System.out.println("adding index: "+index+" pos: "+pos);
+        addIndex(index, pos);
 
         // add this reference to all the suffixes as well
         Node iter = this.suffix;
@@ -124,7 +106,7 @@ class Node {
             if (iter.contains(index)) {
                 break;
             }
-            iter.addRef(index);
+            iter.addRef(index, pos);
             iter = iter.suffix;
         }
 
@@ -139,21 +121,7 @@ class Node {
      * @return true <tt>this</tt> contains a reference to index
      */
     private boolean contains(int index) {
-        int low = 0;
-        int high = lastIdx - 1;
-
-        while (low <= high) {
-            int mid = (low + high) >>> 1;
-            int midVal = data[mid];
-
-            if (midVal < index)
-                low = mid + 1;
-            else if (midVal > index)
-                high = mid - 1;
-            else
-                return true;
-        }
-        return false;
+        return data.containsKey(index);
         // Java 5 equivalent to
         // return java.util.Arrays.binarySearch(data, 0, lastIdx, index) >= 0;
     }
@@ -172,7 +140,7 @@ class Node {
 
     private Set<Integer> computeAndCacheCountRecursive() {
         Set<Integer> ret = new HashSet<Integer>();
-        for (int num : data) {
+        for (int num : data.keySet()) {
             ret.add(num);
         }
         for (Edge e : edges.values()) {
@@ -224,13 +192,8 @@ class Node {
         this.suffix = suffix;
     }
 
-    private void addIndex(int index) {
-        if (lastIdx == data.length) {
-            int[] copy = new int[data.length + INCREMENT];
-            System.arraycopy(data, 0, copy, 0, data.length);
-            data = copy;
-        }
-        data[lastIdx++] = index;
+    private void addIndex(int index, int pos) {
+        data.put(index, pos);
     }
 }
 
