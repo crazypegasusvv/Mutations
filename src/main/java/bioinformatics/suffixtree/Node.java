@@ -69,37 +69,15 @@ class Node {
      * Returns all the indexes associated to this node and its children.
      * @return all the indexes associated to this node and its children
      */
-    Collection<Integer> getData() {
-        return getData(-1);
-    }
-
-    /**
-     * Returns the first <tt>numElements</tt> elements from the ones associated to this node.
-     *
-     * Gets data from the payload of both this node and its children, the string representation
-     * of the path to this node is a substring of the one of the children nodes.
-     *
-     * @param numElements the number of results to return. Use -1 to get all
-     * @return the first <tt>numElements</tt> associated to this node and children
-     */
-    Collection<Integer> getData(int numElements) {
+    Set<Integer> getData() {
         Set<Integer> ret = new HashSet<Integer>();
         for (int num : data.keySet()) {
-            ret.add(num*1000 + data.get(num));
-            if (ret.size() == numElements) {
-                return ret;
-            }
+            ret.add(num);
         }
-        //System.out.println("--__--");
-        // need to get more matches from child nodes. This is what may waste time
+
         for (Edge e : edges.values()) {
-            if (-1 == numElements || ret.size() < numElements) {
-                for (int num : e.getDest().getData()) {
-                    ret.add(num);
-                    if (ret.size() == numElements) {
-                        return ret;
-                    }
-                }
+            for (int num : e.getDest().getData()) {
+                ret.add(num);
             }
         }
         return ret;

@@ -17,23 +17,6 @@ public class App
 {
     public static void main(String[] args)
     {
-        final String refFilePath = "D:\\Reading\\Final Year Project\\Main\\BioInformatics\\Mutation\\src\\main\\java\\bioinformatics\\referenceFile.txt";
-        final int maxStringSize = 123;
-        System.out.print("Enter refFilePath: ");
-        Scanner inputReader = new Scanner(System.in);
-        //refFilePath = inputReader.nextLine();
-        System.out.println("ref path is: "+refFilePath);
-        Compressor dnaCompressor = new Compressor(refFilePath, maxStringSize);
-        try {
-            dnaCompressor.createGST();
-            final int testSearches = 0;
-            for (int i = 0; i < testSearches; i++) {
-                String testString = inputReader.nextLine();
-                dnaCompressor.searchSubStringFromGST(testString);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("exception occured!");
-        }
+        System.out.println("UI coming soon!");
     }
 }

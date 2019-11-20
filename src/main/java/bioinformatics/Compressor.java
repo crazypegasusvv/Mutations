@@ -27,7 +27,7 @@ public class Compressor {
             this.maxStringSize = stringMaxSizeInput;
         }
 
-        public void createGST()  {
+        public GeneralizedSuffixTree createGST()  {
             try {
                 gst = new GeneralizedSuffixTree();
                 FileInputStream refFileStream = new FileInputStream(refFilePath);
@@ -39,32 +39,22 @@ public class Compressor {
                     char ch = (char)refFileStream.read();
                     if(Character.isLetter(ch)) {
                         if(sb.length() == maxStringSize) {
-                           // System.out.println("string put in gst:  with index: " + stringIndex);
+                            System.out.println("string put in gst: "+ sb.toString() + " with index: " + stringIndex);
                             gst.put(sb.toString(), stringIndex++);
                             sb.delete(0, 1);
                         }
                         sb.append(ch);
                     }
                 }
-                //System.out.println("string put in gst: " + sb.toString() + " with index: " + stringIndex);
+                System.out.println("string put in gst: " + sb.toString() + " with index: " + stringIndex);
                 gst.put(sb.toString(), stringIndex++);
                 int endTime = (int) System.currentTimeMillis();
                 System.out.println("-------- Tree Generated -----------");
-                System.out.println("start-time: " +startTime+ " end-time: "+endTime);
                 System.out.println("Time taken is: "+ (endTime - startTime)+" ms");
             } catch(Exception e) {
                 e.printStackTrace();
                 System.out.println("Failed to open refFile");
             }
-        }
-
-        public void searchSubStringFromGST(final String dnaSequence) {
-            List<Integer> indexList = new ArrayList<Integer>(gst.search(dnaSequence));
-            sort(indexList);
-            if(indexList.isEmpty()) {
-                System.out.println("string not found in generalized suffix tree!");
-            } else {
-                System.out.println("string found at index: "+ indexList.get(0));
-            }
+            return gst;
         }
 }
