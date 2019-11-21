@@ -50,7 +50,7 @@ public class Compressor {
                 gst.put(sb.toString(), stringIndex++);
                 int endTime = (int) System.currentTimeMillis();
                 System.out.println("-------- Tree Generated -----------");
-                System.out.println("start-time: " +startTime+ " end-time: "+endTime);
+                //System.out.println("start-time: " +startTime+ " end-time: "+endTime);
                 System.out.println("Time taken is: "+ (endTime - startTime)+" ms");
             } catch(Exception e) {
                 e.printStackTrace();
@@ -64,7 +64,10 @@ public class Compressor {
             if(indexList.isEmpty()) {
                 System.out.println("string not found in generalized suffix tree!");
             } else {
-                System.out.println("string found at index: "+ indexList.get(0));
+                for(int index : indexList) {
+                    System.out.print(" "+index);
+                }
+                System.out.println("");
             }
         }
 }

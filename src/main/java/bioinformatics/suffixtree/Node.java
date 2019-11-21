@@ -85,7 +85,7 @@ class Node {
     Collection<Integer> getData(int numElements) {
         Set<Integer> ret = new HashSet<Integer>();
         for (int num : data.keySet()) {
-            ret.add(num*1000 + data.get(num));
+            ret.add(num);
             if (ret.size() == numElements) {
                 return ret;
             }
