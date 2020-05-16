@@ -27,7 +27,7 @@ public class Compressor {
             this.maxStringSize = stringMaxSizeInput;
         }
 
-        public void createGST()  {
+        public GeneralizedSuffixTree createGST()  {
             try {
                 gst = new GeneralizedSuffixTree();
                 FileInputStream refFileStream = new FileInputStream(refFilePath);
@@ -39,18 +39,17 @@ public class Compressor {
                     char ch = (char)refFileStream.read();
                     if(Character.isLetter(ch)) {
                         if(sb.length() == maxStringSize) {
-                           // System.out.println("string put in gst:  with index: " + stringIndex);
+                            System.out.println("string put in gst: "+ sb.toString() + " with index: " + stringIndex);
                             gst.put(sb.toString(), stringIndex++);
                             sb.delete(0, 1);
                         }
                         sb.append(ch);
                     }
                 }
-                //System.out.println("string put in gst: " + sb.toString() + " with index: " + stringIndex);
+                System.out.println("string put in gst: " + sb.toString() + " with index: " + stringIndex);
                 gst.put(sb.toString(), stringIndex++);
                 int endTime = (int) System.currentTimeMillis();
                 System.out.println("-------- Tree Generated -----------");
-                //System.out.println("start-time: " +startTime+ " end-time: "+endTime);
                 System.out.println("Time taken is: "+ (endTime - startTime)+" ms");
             } catch(Exception e) {
                 e.printStackTrace();
