@@ -7,8 +7,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Mutation" />
+        <module name="Mutations" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Mutation" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
 </project>

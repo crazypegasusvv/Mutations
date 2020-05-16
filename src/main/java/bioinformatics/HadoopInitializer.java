@@ -3,6 +3,7 @@ package bioinformatics;
 import java.io.IOException;
 
 import bioinformatics.suffixtree.GeneralizedSuffixTree;
+import jdk.jfr.events.ExceptionThrownEvent;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -29,8 +30,20 @@ public class HadoopInitializer {
 
         }
 
+        /**
+         *  write mapper logic here
+         *  mapper receives key-value pairs where key is (partition_number, filename) and value is the DNA
+         *  sequence in the file "filename" in partition = partition_number
+         *  this mapper has to implement the search and pattern growth to be done in each
+         *  split i.e., current key-value pair
+         *
+         */
         protected void map(Text key, Text value, Context context) {
+            try {
 
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
 
         protected void cleanup(Context context) {
@@ -51,6 +64,12 @@ public class HadoopInitializer {
         protected void setup(Context context) {
             mos = new MultipleOutputs(context);
         }
+
+        /**
+         *  write reducer logic here
+         *  reducer  has to process key-value pairs it receives from all of the mappers
+         *  the final key-value pairs are written into out path
+         */
 
         public void reduce(DNAWritable key, Iterable<Text> value, Context context) {
             try {

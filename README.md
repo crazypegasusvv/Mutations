@@ -1,2 +1,2 @@
 # Mutations
-Predict Mutations from large genomic data
+Detect Mutations from large genomic data
