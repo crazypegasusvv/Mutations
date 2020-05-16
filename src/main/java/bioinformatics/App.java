@@ -17,6 +17,24 @@ public class App
 {
     public static void main(String[] args)
     {
-        System.out.println("UI coming soon!");
+        final String refFilePath = "C:\\Users\\shiva kumar dongala\\Desktop\\Mutations\\src\\main\\java\\" +
+                "bioinformatics\\referenceFile.txt";
+        final int maxStringSize = 128;
+        System.out.print("Enter refFilePath: ");
+        Scanner inputReader = new Scanner(System.in);
+        //refFilePath = inputReader.nextLine();
+        System.out.println("ref path is: "+refFilePath);
+        Compressor dnaCompressor = new Compressor(refFilePath, maxStringSize);
+        try {
+            dnaCompressor.createGST();
+            final int testSearches = 4;
+            for (int i = 0; i < testSearches; i++) {
+                String testString = inputReader.nextLine();
+                dnaCompressor.searchSubStringFromGST(testString);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("exception occured!");
+        }
     }
 }

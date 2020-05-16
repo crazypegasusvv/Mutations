@@ -55,6 +55,18 @@ public class Compressor {
                 e.printStackTrace();
                 System.out.println("Failed to open refFile");
             }
-            return gst;
+        }
+
+        public void searchSubStringFromGST(final String dnaSequence) {
+            List<Integer> indexList = new ArrayList<Integer>(gst.search(dnaSequence));
+            sort(indexList);
+            if(indexList.isEmpty()) {
+                System.out.println("string not found in generalized suffix tree!");
+            } else {
+                for(int index : indexList) {
+                    System.out.print(" "+index);
+                }
+                System.out.println("");
+            }
         }
 }
