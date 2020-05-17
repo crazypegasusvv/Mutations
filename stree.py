@@ -324,6 +324,7 @@ while 1:
             stflag = 0  # unset stop codon
             sfound = 0  # unset the sfound
         else:  # start codon not found
+        	ncdindex = index
             if ncflag == 0:  # non coding flag also not set
                 Non_Code_dict[ncdindex] = codon
                 ncflag = 1  # set the non coding flag
