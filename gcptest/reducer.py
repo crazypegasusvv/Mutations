@@ -28,22 +28,59 @@ for wrd in word_map.keys():
 
 import sys
 
-mut_map = {}
-
-print('Edit Mutations: \n')
-print('pos\torig\treplace')
+mut_map = {'Silent' : [],'Missense' : [] , 'Nonsense' : []}
+transition = []
+transversion = []
+#print('Edit Mutations: \n')
+#print('pos\torig\treplace')
+transit_fd = open("Transitions.txt",'w')
+transverse_fd = open("Transversions.txt",'w')
+mutations_fd = open("Mutations.txt",'w')
 
 for line in sys.stdin:
     line = line.strip()
-    for ctch in bad_chars:
-        line = line.replace(ctch,'')
-    num, seq = line.split()
-    num = int(num)
-    if num in mut_map.keys():
-        seq0 = mut_map[num]
-        for pos in range(len(seq0)):
-            if seq[pos] != seq0[pos]:
-                epos = num + pos
-                print(str(epos) + '\t' + seq0[pos] + '\t' + seq[pos] + '\n')
+    #for ctch in bad_chars:
+     #   line = line.replace(ctch,'')
+    mut_type, tup = line.split()
+    if mut_type == 'Transit' :
+        transition.append(tup)
+    elif mut_type == 'Transverse':
+        transversion.append(tup)
     else:
-        mut_map[num] = seq
+        mut_map[mut_type].append(tup)
+transition.sort()
+if len(transition) != 0:
+    for i in transition:
+        transit_fd.write(i)
+        transit_fd.write("\n")
+ else:
+    transit_fd.write("No transitions found ")
+transit_fd.close() 
+
+transversion.sort()
+if len(transversion) != 0:
+    for i in transversion:
+        transverse_fd.write(i)
+        transverse_fd.write("\n")
+ else:
+    transverse_fd.write("No transitions found ")
+transverse_fd.close()
+
+for i in mut_map:
+    mut_map[i].sort()
+    
+for i,j in mut_map.items():
+    mutations_fd.write(i)
+    mutations_fd.write(":\n")
+    for tup in j:
+        mutations_fd.write(tup)
+        mutations_fd.write("\n")
+mutations_fd.close()
+        
+    
+
+
+        
+    
+
+    
