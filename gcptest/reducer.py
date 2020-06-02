@@ -4,9 +4,6 @@ import sys
 mut_map = {'Silent' : [],'Missense' : [] , 'Nonsense' : []}
 transition = []
 transversion = []
-transit_fd = open("Transitions.txt",'w')
-transverse_fd = open("Transversions.txt",'w')
-mutations_fd = open("Mutations.txt",'w')
 
 
 def main(argv):
@@ -29,34 +26,30 @@ def main(argv):
             line = sys.stdin.readline()
     except "end of file":
         return None
+
     transition.sort()
     if len(transition) != 0:
+    	print '\nTransitions: \n'
         for i in transition:
-            transit_fd.write(str(i))
-            transit_fd.write("\n")
+            print '%s\t%s\t%s' % (str(i[0]), i[1], i[2])
     else:
-        transit_fd.write("No transitions found ")
-    transit_fd.close()
+        print "No transitions found!"
 
     transversion.sort()
     if len(transversion) != 0:
+    	print '\nTransversions: \n'
         for i in transversion:
-            transverse_fd.write(str(i))
-            transverse_fd.write("\n")
+        	print '%s\t%s\t%s' % (str(i[0]), i[1], i[2])
     else:
-        transverse_fd.write("No transitions found ")
-    transverse_fd.close()
+        print "No transitions found"
 
     for i in mut_map:
         mut_map[i].sort()
 
     for i,j in mut_map.items():
-        mutations_fd.write(i)
-        mutations_fd.write(":\n")
+        print i + ": \n"
         for tup in j:
-            mutations_fd.write(str(tup))
-            mutations_fd.write("\n")
-    mutations_fd.close()
+        	print '%s\t%s\t%s' % (str(tup[0]), tup[1], tup[2])
 
 
 if __name__ == "__main__":
