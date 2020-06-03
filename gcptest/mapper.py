@@ -83,7 +83,7 @@ Mutations = {'Silent': [], 'Missense': [], 'Nonsense': []}
 
 
 def main(argv):
-    seq_fd = open("testin.txt", 'r')
+    seq_fd = open("genome.seq", 'r')
     line = sys.stdin.readline()
     try:
         while line:
