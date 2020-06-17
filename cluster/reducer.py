@@ -17,11 +17,11 @@ transitions = "Transitions.csv"
 
 outdir = 'muts'
 username = 'virinchi'
-tran_path = os.path.join(os.sep, 'home', username, outdir, transitions)
-trans_path = os.path.join(os.sep, 'home', username, outdir, transverses)
+tran_path = os.path.join(os.sep, outdir, transitions)
+trans_path = os.path.join(os.sep, outdir, transverses)
 
 mut_files = ["Silents.csv", "Missenses.csv", "Nonsenses.csv"]
-mut_paths = [os.path.join(os.sep, 'home', username, outdir, type_name) for type_name in mut_files]
+mut_paths = [os.path.join(os.sep, outdir, type_name) for type_name in mut_files]
 
 def main(argv):
     line = sys.stdin.readline()
