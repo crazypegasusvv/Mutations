@@ -1,0 +1,3 @@
+[submodule "frame_shift_mutations"]
+	path = frame_shift_mutations
+	url = https://github.com/paldynaagata/Needleman-Wunsh_algorithm
