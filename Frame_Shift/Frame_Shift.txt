@@ -1,0 +1,47 @@
+ A '_' in the first sequence implies insertion took place
+ A '_' in the second sequence implies deletion took place
+
+=============================================================
+
+TAATTTATAGCTCTTAAAAAAAAGTAT___AAC
+_AATTTATAGCTCTTAAAAAAAAGTATTACAAC
+Score :  26
+Point mutations at index/indices:  []
+
+==================================
+
+TAATTTATAGCTCTTAAAAAAAAGTA_T__AAC
+_AATTTATAGCTCTTAAAAAAAAGTATTACAAC
+Score :  21
+Point mutations at index/indices:  []
+
+==================================
+
+TAATTTATAGCTCTTAAAAAAAAGTA_TA__AC
+_AATTTATAGCTCTTAAAAAAAAGTATTACAAC
+Score :  17
+Point mutations at index/indices:  []
+
+==================================
+
+TAATTTATAGCTCTTAAAAAAAAGTAT_A__AC
+_AATTTATAGCTCTTAAAAAAAAGTATTACAAC
+Score :  17
+Point mutations at index/indices:  []
+
+==================================
+
+TAATTTATAGCTCTTAAAAAAAAGTA_TA_A_C
+_AATTTATAGCTCTTAAAAAAAAGTATTACAAC
+Score :  8
+Point mutations at index/indices:  []
+
+==================================
+
+TAATTTATAGCTCTTAAAAAAAAGTAT_A_A_C
+_AATTTATAGCTCTTAAAAAAAAGTATTACAAC
+Score :  8
+Point mutations at index/indices:  []
+
+==================================
+
